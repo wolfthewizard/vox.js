@@ -46,6 +46,26 @@ class Vector3 {
         this.y = y;
         this.z = z;
     }
+
+    add(other) {
+        return new Vector3(this.x + other.x, this.y + other.y, this.z + other.z);
+    }
+
+    timesScalar(scalar) {
+        return new Vector3(
+            this.x * scalar,
+            this.y * scalar,
+            this.z * scalar
+        );
+    }
+
+    isZero() {
+        return this.x == 0 && this.y == 0 && this.z == 0;
+    }
+
+    toString() {
+        return `(${this.x}, ${this.y}, ${this.z})`;
+    }
 }
 
 
@@ -82,5 +102,45 @@ class Face {
             }
         }
         return this.__normalsArray;
+    }
+}
+
+
+class Orientation {
+
+    constructor(position, rotation) {
+        this.position = position;
+        this.rotation = rotation;
+    }
+
+    add(other) {
+        return new Orientation(
+            this.position.add(other.position),
+            this.rotation.add(other.rotation)
+        );
+    }
+
+    timesScalar(scalar) {
+        return new Orientation(
+            this.position.timesScalar(scalar),
+            this.rotation.timesScalar(scalar)
+        );
+    }
+
+    isZero() {
+        return this.position.isZero() && this.rotation.isZero();
+    }
+}
+
+
+class Camera {
+    
+    constructor(orientation, fov) {
+        this.orientation = orientation;
+        this.fov = fov;
+    }
+
+    move(orientationChange) {
+        this.orientation = this.orientation.add(orientationChange);
     }
 }

@@ -1,16 +1,13 @@
 class Renderer {
 
-    constructor(glOperator) {
+    constructor(glOperator, camera, color) {
         this.__glOperator = glOperator;
+        this.__camera = camera;
+        this.__color = color;
 
         this.__renderables = [];
-        this.__rerenderQueued = true;
 
         this.__render = this.__render.bind(this);
-    }
-
-    signifyChange() {
-        this.__rerenderQueued = true;
     }
 
     addRenderable(renderable) {
@@ -21,17 +18,20 @@ class Renderer {
         this.__renderables.splice(this.__renderables.indexOf(renderable), 1);
     }
 
+    clearRenderables() {
+        this.__renderables = [];
+    }
+
     requestRender() {
-        if (this.__rerenderQueued) {
-            this.__rerenderQueued = false;
-            requestAnimationFrame(this.__render);
-        }
+        requestAnimationFrame(this.__render);
     }
 
     __render() {
-        // todo
-        for (renderable of this.__renderables) {
-            // todo
+        this.__glOperator.preRender(this.__camera, this.__color);
+        for (const renderable of this.__renderables) {
+            this.__glOperator.setBuffer(this.__glOperator.positionBuffer, renderable.pointsArray);
+            this.__glOperator.setBuffer(this.__glOperator.normalsBuffer, renderable.normalsArray);
+            this.__glOperator.renderArray(renderable.pointsArray.length / 3);
         }
     }
 }

@@ -160,18 +160,17 @@ class GLOperator {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
         const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
-        const fov = Math.PI / 4;
 
-        const perspective = matrix4.perspective(fov, aspect, 1, 5000);
+        const perspective = matrix4.perspective(camera.fov, aspect, 1, 5000);
 
         let matrix = matrix4.identity();
-        matrix = matrix4.xRotation(camera.rotation.x);
-        matrix = matrix4.zRotate(matrix, camera.rotation.z);
+        matrix = matrix4.xRotation(camera.orientation.rotation.x);
+        matrix = matrix4.zRotate(matrix, camera.orientation.rotation.z);
         matrix = matrix4.translate(
             matrix,
-            camera.position.x,
-            camera.position.y,
-            camera.position.z,
+            camera.orientation.position.x,
+            camera.orientation.position.y,
+            camera.orientation.position.z,
         );
 
         this.gl.uniformMatrix4fv(this.uniforms.uPerspective, false, perspective);
