@@ -4,26 +4,6 @@ let elementMediator;
 function setup() {
     elementMediator = new ElementMediator();
     document.getElementById("objModelInput").addEventListener("change", readFile, false);
-
-    const glOperator = new GLOperator();
-    const arr = [
-        -1000, 1000, -2000, 
-        -1000, -2000, -2000, 
-        1000, 1000, 0
-    ];
-    glOperator.preRender(
-        {
-            position: new Vector3(0, 1000, -1000),
-            rotation: new Vector3(-Math.PI / 4, 0, 0)
-        }, 
-        new Color(0.8, 0.2, 0.2, 1)
-    );
-    const normalVector = getNormalVector(arr);
-    glOperator.setBuffer(glOperator.positionBuffer, arr)
-    glOperator.setBuffer(glOperator.normalsBuffer, [
-        ...normalVector, ...normalVector, ...normalVector
-    ]);
-    glOperator.renderArray(arr.length / 3);
 }
 
 function readFile(evt) {
@@ -37,8 +17,23 @@ function readFile(evt) {
 }
 
 function loadModel(modelText) {
-    console.log(modelText);
-    console.log("henlo");
+    const model = Model.fromOBJ(modelText);
+    // console.log(model.pointsArray);
+    // console.log(model.normalsArray);
+    
+
+
+    const glOperator = new GLOperator();
+    glOperator.preRender(
+        {
+            position: new Vector3(0, 100, -100),
+            rotation: new Vector3(-Math.PI / 4, 0, 0)
+        }, 
+        new Color(0.8, 0.2, 0.2, 1)
+    );
+    glOperator.setBuffer(glOperator.positionBuffer, model.pointsArray)
+    glOperator.setBuffer(glOperator.normalsBuffer, model.normalsArray);
+    glOperator.renderArray(model.pointsArray.length / 3);
 }
 
 
