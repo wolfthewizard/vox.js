@@ -40,12 +40,12 @@ class InputHandler {
             new Vector3(
                 this.pressedKeys["d"] - this.pressedKeys["a"],
                 this.pressedKeys["e"] - this.pressedKeys["q"],
-                this.pressedKeys["s"] - this.pressedKeys["w"]
+                this.pressedKeys["w"] - this.pressedKeys["s"]
             ),
             new Vector3(
                 this.pressedKeys["ArrowUp"] - this.pressedKeys["ArrowDown"],
-                0,
-                this.pressedKeys["ArrowLeft"] - this.pressedKeys["ArrowRight"]
+                this.pressedKeys["ArrowLeft"] - this.pressedKeys["ArrowRight"],
+                0
             )
         );
     }

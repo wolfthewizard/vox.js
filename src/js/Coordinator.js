@@ -55,6 +55,7 @@ class Coordinator {
             );
             this.__camera.move(orientationChange);
             this.__rerenderQueued = true;
+            console.log(`${this.__camera.orientation}`);
         }
     }
 

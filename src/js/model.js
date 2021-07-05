@@ -130,6 +130,10 @@ class Orientation {
     isZero() {
         return this.position.isZero() && this.rotation.isZero();
     }
+
+    toString() {
+        return `pos=${this.position}, rot=${this.rotation}`;
+    }
 }
 
 

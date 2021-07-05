@@ -164,12 +164,12 @@ class GLOperator {
         const perspective = matrix4.perspective(camera.fov, aspect, 1, 5000);
 
         let matrix = matrix4.identity();
-        matrix = matrix4.xRotation(camera.orientation.rotation.x);
-        matrix = matrix4.zRotate(matrix, camera.orientation.rotation.z);
+        matrix = matrix4.xRotation(-camera.orientation.rotation.x);
+        matrix = matrix4.yRotate(matrix, -camera.orientation.rotation.y);
         matrix = matrix4.translate(
             matrix,
-            camera.orientation.position.x,
-            camera.orientation.position.y,
+            -camera.orientation.position.x,
+            -camera.orientation.position.y,
             camera.orientation.position.z,
         );
 
