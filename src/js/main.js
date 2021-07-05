@@ -3,9 +3,10 @@ let elementMediator;
 
 function setup() {
     elementMediator = new ElementMediator();
-    const camera = new Camera(
+    const camera = new FocusedCamera(
         new Orientation(new Vector3(0, 100, -100), new Vector3(-Math.PI / 4, 0, 0)),
-        Math.PI / 4
+        Math.PI / 4,
+        200
     );
     const glOperator = new GLOperator();
     const renderer = new Renderer(glOperator, camera, new Color(0.8, 0.2, 0.2, 1));

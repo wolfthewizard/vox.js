@@ -18,7 +18,9 @@ class InputHandler {
             "a": false,
             "d": false,
             "q": false,
-            "e": false
+            "e": false,
+            "+": false,
+            "-": false
         };
     }
 
@@ -46,7 +48,8 @@ class InputHandler {
                 this.pressedKeys["ArrowUp"] - this.pressedKeys["ArrowDown"],
                 this.pressedKeys["ArrowLeft"] - this.pressedKeys["ArrowRight"],
                 0
-            )
+            ),
+            this.pressedKeys["+"] ? 1 : 0 + this.pressedKeys["-"] ? -1 : 0
         );
     }
 }

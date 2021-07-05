@@ -53,9 +53,9 @@ class Coordinator {
             orientationChange.rotation = orientationChange.rotation.timesScalar(
                 Coordinator.rotateMultiplier
             );
+            orientationChange.elevation *= Coordinator.translateMultiplier;
             this.__camera.move(orientationChange);
             this.__rerenderQueued = true;
-            console.log(`${this.__camera.orientation}`);
         }
     }
 
