@@ -46,5 +46,10 @@ function prepareModelLoader(renderer, coordinator) {
         renderer.addRenderable(model);
         coordinator.translateMultiplier = Coordinator.translateMultiplier * biggestDimension;
         coordinator.queueRerender();
+
+        elementMediator.swapYZButton.onclick = () => {
+            model.swapYZ();
+            coordinator.queueRerender();
+        };
     };
 }

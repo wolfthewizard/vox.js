@@ -82,14 +82,14 @@ class Face {
 
     get pointsArray() {
         if (!this.__pointsArray) {
-            this.__createPointsArray();
+            this.preparePointsArray();
         }
         return this.__pointsArray;
     }
 
     get normalsArray() {
         if (!this.__normalsArray) {
-            this.__createNormalsArray();
+            this.prepareNormalsArray();
         }
         return this.__normalsArray;
     }
@@ -120,7 +120,7 @@ class Face {
         return new Bounds(minBound, maxBound);
     }
 
-    __createPointsArray() {
+    preparePointsArray() {
         this.__pointsArray = [];
         for (let i = 2; i < this.__points.length; i++) {
             this.__pointsArray.push(...[
@@ -131,7 +131,7 @@ class Face {
         }
     }
 
-    __createNormalsArray() {
+    prepareNormalsArray() {
         this.__normalsArray = [];
         for (let i = 2; i < this.__normals.length; i++) {
             this.__normalsArray.push(...[

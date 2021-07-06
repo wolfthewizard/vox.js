@@ -59,8 +59,6 @@ class Coordinator {
             orientationChange.elevation *= this.translateMultiplier;
             this.__camera.move(orientationChange);
             this.__rerenderQueued = true;
-
-            console.log(this.__camera.__orientationInfo.elevation);
         }
     }
 

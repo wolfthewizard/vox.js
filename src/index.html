@@ -14,12 +14,19 @@
         <script src="./js/main.js" type="text/javascript"></script>
     </head>
     <body onload="setup();">
-        <input 
-            type="file" 
-            id="objModelInput" 
-            name="objModelInput" 
-            enctype="multipart/form-data"
-        />
+        <div>
+            <input 
+                type="file" 
+                id="objModelInput" 
+                name="objModelInput" 
+                enctype="multipart/form-data"
+            />
+        </div>
+        <div>
+            <button id="swapYZButton">
+                Swap Y and Z
+            </button>
+        </div>
         <canvas id="canvas" width="540" height="540"></canvas>
     </body>
 </html>

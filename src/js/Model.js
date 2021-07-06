@@ -16,26 +16,41 @@ class Model {
     static fsVTNreg = /^\d+\/d+\/d+$/i;
     static fsVNreg = /^\d+\/\/d+$/i;
 
-    constructor(faces) {
+    constructor(faces, points, normals) {
         this.faces = faces;
+        this.points = points;
+        this.normals = normals;
+    }
+
+    swapYZ() {
+        for (const p of this.points) {
+            const temp = p.y;
+            p.y = p.z;
+            p.z = temp;
+        }
+        for (const n of this.normals) {
+            const temp = n.y;
+            n.y = n.z;
+            n.z = temp;
+        }
+        for (const f of this.faces) {
+            f.preparePointsArray();
+            f.prepareNormalsArray();
+        }
+        this.__preparePointsArray();
+        this.__prepareNormalsArray();
     }
 
     get pointsArray() {
         if (!this.__pointsArray) {
-            this.__pointsArray = [];
-            for (const face of this.faces) {
-                this.__pointsArray.push(...face.pointsArray);
-            }
+            this.__preparePointsArray();
         }
         return this.__pointsArray;
     }
 
     get normalsArray() {
         if (!this.__normalsArray) {
-            this.__normalsArray = [];
-            for (const face of this.faces) {
-                this.__normalsArray.push(...face.normalsArray);
-            }
+            this.__prepareNormalsArray();
         }
         return this.__normalsArray;
     }
@@ -68,13 +83,13 @@ class Model {
 
     static fromOBJ(objText) {
         const lines = objText.split("\n");
-        const vertices = [undefined];       // indexing in obj files starts from 1
+        const points = [undefined];       // indexing in obj files starts from 1
         const normals = [undefined];
         const faces = [];
         for (const line of lines) {
             const segments = line.split(" ");
             if (segments[0] === "v") {
-                vertices.push(
+                points.push(
                     new Vector3(
                         parseFloat(segments[1]), 
                         parseFloat(segments[2]), 
@@ -100,7 +115,7 @@ class Model {
                     // num OR num/num
                     const points = [];
                     for (let i = 1; i < segments.length; i++) {
-                        points.push(vertices[parseFloat(segments[i].split("/")[0])]);
+                        points.push(points[parseFloat(segments[i].split("/")[0])]);
                     }
                     faces.push(new Face(points, Model.__createNormalsFromPoints(points)));
                 } else {
@@ -109,7 +124,7 @@ class Model {
                     const fNormals = [];
                     for (let i = 1; i < segments.length; i++) {
                         const subsegments = segments[i].split("/")
-                        fPoints.push(vertices[parseFloat(subsegments[0])]);
+                        fPoints.push(points[parseFloat(subsegments[0])]);
                         fNormals.push(normals[parseFloat(subsegments[2])]);
                     }
                     const newFace = new Face(fPoints, fNormals);
@@ -117,7 +132,23 @@ class Model {
                 }
             }
         }
-        return new Model(faces);
+        points.splice(0, 1);
+        normals.splice(0, 1);
+        return new Model(faces, points, normals);
+    }
+
+    __preparePointsArray() {
+        this.__pointsArray = [];
+        for (const face of this.faces) {
+            this.__pointsArray.push(...face.pointsArray);
+        }
+    }
+
+    __prepareNormalsArray() {
+        this.__normalsArray = [];
+        for (const face of this.faces) {
+            this.__normalsArray.push(...face.normalsArray);
+        }
     }
 
     static __createNormalsFromPoints(points) {
