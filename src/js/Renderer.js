@@ -31,7 +31,7 @@ class Renderer {
     }
 
     setDistance(distance) {
-        this.__camera.distance = distance;
+        this.__camera.__orientationInfo.elevation = distance;
     }
 
     __render() {

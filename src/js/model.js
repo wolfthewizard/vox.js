@@ -189,67 +189,72 @@ class Orientation {
     }
 
     toString() {
-        return `pos=${this.position}, rot=${this.rotation}`;
+        return `pos=${this.position}, rot=${this.rotation}, el=${this.elevation}`;
     }
+}
+
+
+class CameraMode {
+    static FREE = 0;
+    static FOCUSED = 1;
 }
 
 
 class Camera {
     
-    constructor(orientation, fov) {
-        this.orientation = orientation;
-        this.fov = fov;
-    }
-
-    move(orientationChange) {
-        this.orientation = this.orientation.add(orientationChange);
-    }
-}
-
-
-class FocusedCamera {
-
-    constructor(orientationInfo, fov, distance) {
+    constructor(orientationInfo, fov, mode) {
         this.__orientationInfo = orientationInfo;
         this.fov = fov;
-        this.distance = distance;
+        this.mode = mode;
     }
 
     move(orientationChange) {
-        const quadfull = Math.PI / 2;
-        const full = 2 * Math.PI;
-        this.distance += orientationChange.elevation;
-        this.distance = this.distance < 0 ? 0 : this.distance;
-        this.__orientationInfo = this.__orientationInfo.add(orientationChange);
-        this.__orientationInfo.rotation.x = (
-            this.__orientationInfo.rotation.x < -quadfull 
-                ? -quadfull 
-                : this.__orientationInfo.rotation.x > quadfull 
-                    ? quadfull 
-                    : this.__orientationInfo.rotation.x
-        );
-        this.__orientationInfo.rotation.y = (
-            this.__orientationInfo.rotation.y < 0 
-                ? this.__orientationInfo.rotation.y + full
-                : this.__orientationInfo.rotation.y > full
-                    ? this.__orientationInfo.rotation.y - full
-                    : this.__orientationInfo.rotation.y
-        );
+        if (this.mode == CameraMode.FREE) {
+            this.__orientationInfo = this.__orientationInfo.add(orientationChange);
+        } else {
+            const quadfull = Math.PI / 2;
+            const full = 2 * Math.PI;
+            this.__orientationInfo.elevation += orientationChange.elevation;
+            this.__orientationInfo.elevation = this.__orientationInfo.elevation < 0 
+                ? 0 
+                : this.__orientationInfo.elevation;
+            this.__orientationInfo = this.__orientationInfo.add(orientationChange);
+            this.__orientationInfo.rotation.x = (
+                this.__orientationInfo.rotation.x < -quadfull 
+                    ? -quadfull 
+                    : this.__orientationInfo.rotation.x > quadfull 
+                        ? quadfull 
+                        : this.__orientationInfo.rotation.x
+            );
+            this.__orientationInfo.rotation.y = (
+                this.__orientationInfo.rotation.y < 0 
+                    ? this.__orientationInfo.rotation.y + full
+                    : this.__orientationInfo.rotation.y > full
+                        ? this.__orientationInfo.rotation.y - full
+                        : this.__orientationInfo.rotation.y
+            );
+        }
     }
 
     get orientation() {
-        const elevatedDist = this.distance * Math.cos(this.__orientationInfo.rotation.x);
-        return new Orientation(
-            this.__orientationInfo.position.add(new Vector3(
-                -elevatedDist * Math.sin(this.__orientationInfo.rotation.y),
-                this.distance * Math.sin(this.__orientationInfo.rotation.x),
-                -elevatedDist * Math.cos(this.__orientationInfo.rotation.y)
-            )),
-            new Vector3(
-                -this.__orientationInfo.rotation.x,
-                -this.__orientationInfo.rotation.y,
-                0
-            )
-        );
+        if (this.mode == CameraMode.FREE) {
+            return this.__orientationInfo;
+        } else {
+            const elevatedDist = this.__orientationInfo.elevation * Math.cos(this.__orientationInfo.rotation.x);
+            return new Orientation(
+                this.__orientationInfo.position.add(
+                    new Vector3(
+                        -elevatedDist * Math.sin(this.__orientationInfo.rotation.y),
+                        this.__orientationInfo.elevation * Math.sin(this.__orientationInfo.rotation.x),
+                        -elevatedDist * Math.cos(this.__orientationInfo.rotation.y)
+                    )
+                ),
+                new Vector3(
+                    -this.__orientationInfo.rotation.x,
+                    -this.__orientationInfo.rotation.y,
+                    0
+                )
+            );
+        }
     }
 }

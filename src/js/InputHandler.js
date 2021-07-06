@@ -49,7 +49,7 @@ class InputHandler {
                 this.pressedKeys["ArrowLeft"] - this.pressedKeys["ArrowRight"],
                 0
             ),
-            this.pressedKeys["+"] ? 1 : 0 + this.pressedKeys["-"] ? -1 : 0
+            this.pressedKeys["+"] ? -1 : 0 + this.pressedKeys["-"] ? 1 : 0
         );
     }
 }
