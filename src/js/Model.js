@@ -40,9 +40,35 @@ class Model {
         return this.__normalsArray;
     }
 
+    get bounds() {
+        const bounds = this.faces[0].bounds;
+        for (let i = 1; i < this.faces.length; i++) {
+            const viewedBounds = this.faces[i].bounds;
+            if (viewedBounds.minBound.x < bounds.minBound.x) {
+                bounds.minBound.x = viewedBounds.minBound.x;
+            }
+            if (viewedBounds.minBound.y < bounds.minBound.y) {
+                bounds.minBound.y = viewedBounds.minBound.y;
+            }
+            if (viewedBounds.minBound.z < bounds.minBound.z) {
+                bounds.minBound.z = viewedBounds.minBound.z;
+            }
+            if (viewedBounds.maxBound.x > bounds.maxBound.x) {
+                bounds.maxBound.x = viewedBounds.maxBound.x;
+            }
+            if (viewedBounds.maxBound.y > bounds.maxBound.y) {
+                bounds.maxBound.y = viewedBounds.maxBound.y;
+            }
+            if (viewedBounds.maxBound.z > bounds.maxBound.z) {
+                bounds.maxBound.z = viewedBounds.maxBound.z;
+            }
+        }
+        return bounds;
+    }
+
     static fromOBJ(objText) {
         const lines = objText.split("\n");
-        const vertices = [undefined];
+        const vertices = [undefined];       // indexing in obj files starts from 1
         const normals = [undefined];
         const faces = [];
         for (const line of lines) {

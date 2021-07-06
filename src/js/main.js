@@ -34,8 +34,17 @@ function prepareReader(onloadFunction) {
 function prepareModelLoader(renderer, coordinator) {
     return (modelText) => {
         const model = Model.fromOBJ(modelText);
+        const bounds = model.bounds;
+        const size = bounds.size;
+        const center = bounds.minBound.add(size.timesScalar(0.5));
+        const biggestDimension = Math.max(size.x, size.y, size.z);
+        const distance = biggestDimension * 1.5;
+
+        renderer.setCenter(center);
+        renderer.setDistance(distance);
         renderer.clearRenderables();
         renderer.addRenderable(model);
+        coordinator.translateMultiplier = Coordinator.translateMultiplier * biggestDimension;
         coordinator.queueRerender();
     };
 }

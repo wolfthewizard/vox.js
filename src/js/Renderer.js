@@ -26,6 +26,14 @@ class Renderer {
         requestAnimationFrame(this.__render);
     }
 
+    setCenter(center) {
+        this.__camera.__orientationInfo.position = center;
+    }
+
+    setDistance(distance) {
+        this.__camera.distance = distance;
+    }
+
     __render() {
         this.__glOperator.preRender(this.__camera, this.__color);
         for (const renderable of this.__renderables) {

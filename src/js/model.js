@@ -63,6 +63,10 @@ class Vector3 {
         return this.x == 0 && this.y == 0 && this.z == 0;
     }
 
+    copy() {
+        return new Vector3(this.x, this.y, this.z);
+    }
+
     toString() {
         return `(${this.x}, ${this.y}, ${this.z})`;
     }
@@ -78,30 +82,80 @@ class Face {
 
     get pointsArray() {
         if (!this.__pointsArray) {
-            this.__pointsArray = [];
-            for (let i = 2; i < this.__points.length; i++) {
-                this.__pointsArray.push(...[
-                    this.__points[0].x, this.__points[0].y, this.__points[0].z,
-                    this.__points[i-1].x, this.__points[i-1].y, this.__points[i-1].z,
-                    this.__points[i].x, this.__points[i].y, this.__points[i].z
-                ]);
-            }
+            this.__createPointsArray();
         }
         return this.__pointsArray;
     }
 
     get normalsArray() {
         if (!this.__normalsArray) {
-            this.__normalsArray = [];
-            for (let i = 2; i < this.__normals.length; i++) {
-                this.__normalsArray.push(...[
-                    this.__normals[0].x, this.__normals[0].y, this.__normals[0].z,
-                    this.__normals[i-1].x, this.__normals[i-1].y, this.__normals[i-1].z,
-                    this.__normals[i].x, this.__normals[i].y, this.__normals[i].z
-                ]);
-            }
+            this.__createNormalsArray();
         }
         return this.__normalsArray;
+    }
+
+    get bounds() {
+        const minBound = this.__points[0].copy();
+        const maxBound = this.__points[0].copy();
+        for (let i = 1; i < this.__points.length; i++) {
+            const p = this.__points[i];
+            if (p.x < minBound.x) {
+                minBound.x = p.x;
+            } else if (p.x > maxBound.x) {
+                maxBound.x = p.x;
+            }
+
+            if (p.y < minBound.y) {
+                minBound.y = p.y;
+            } else if (p.y > maxBound.y) {
+                maxBound.y = p.y;
+            }
+
+            if (p.z < minBound.z) {
+                minBound.z = p.z;
+            } else if (p.z > maxBound.z) {
+                maxBound.z = p.z;
+            }
+        }
+        return new Bounds(minBound, maxBound);
+    }
+
+    __createPointsArray() {
+        this.__pointsArray = [];
+        for (let i = 2; i < this.__points.length; i++) {
+            this.__pointsArray.push(...[
+                this.__points[0].x, this.__points[0].y, this.__points[0].z,
+                this.__points[i-1].x, this.__points[i-1].y, this.__points[i-1].z,
+                this.__points[i].x, this.__points[i].y, this.__points[i].z
+            ]);
+        }
+    }
+
+    __createNormalsArray() {
+        this.__normalsArray = [];
+        for (let i = 2; i < this.__normals.length; i++) {
+            this.__normalsArray.push(...[
+                this.__normals[0].x, this.__normals[0].y, this.__normals[0].z,
+                this.__normals[i-1].x, this.__normals[i-1].y, this.__normals[i-1].z,
+                this.__normals[i].x, this.__normals[i].y, this.__normals[i].z
+            ]);
+        }
+    }
+}
+
+
+class Bounds {
+    constructor(minBound, maxBound) {
+        this.minBound = minBound;
+        this.maxBound = maxBound;
+    }
+
+    get size() {
+        return new Vector3(
+            this.maxBound.x - this.minBound.x,
+            this.maxBound.y - this.minBound.y,
+            this.maxBound.z - this.minBound.z
+        );
     }
 }
 

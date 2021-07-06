@@ -7,7 +7,7 @@ class Coordinator {
 
     static MAX_FPS = 60;
     static rotateMultiplier = 0.001;
-    static translateMultiplier = 0.1;
+    static translateMultiplier = 0.001;
     
     constructor(renderer, inputHandler, camera) {
         this.__renderer = renderer;
@@ -15,6 +15,9 @@ class Coordinator {
         this.__camera = camera;
 
         this.__rerenderQueued = true;
+
+        this.rotateMultiplier = Coordinator.rotateMultiplier;
+        this.translateMultiplier = Coordinator.translateMultiplier;
     }
 
     async run() {
@@ -48,12 +51,12 @@ class Coordinator {
         if (!axes.isZero()) {
             const orientationChange = axes.timesScalar(deltaTime);
             orientationChange.position = orientationChange.position.timesScalar(
-                Coordinator.translateMultiplier
+                this.translateMultiplier
             );
             orientationChange.rotation = orientationChange.rotation.timesScalar(
-                Coordinator.rotateMultiplier
+                this.rotateMultiplier
             );
-            orientationChange.elevation *= Coordinator.translateMultiplier;
+            orientationChange.elevation *= this.translateMultiplier;
             this.__camera.move(orientationChange);
             this.__rerenderQueued = true;
         }
