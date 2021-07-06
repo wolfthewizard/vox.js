@@ -4,7 +4,7 @@ let elementMediator;
 function setup() {
     elementMediator = new ElementMediator();
     const camera = new Camera(
-        new Orientation(new Vector3(0, 100, -100), new Vector3(Math.PI / 4, 0, 0), 200),
+        new Orientation(new Vector3(0, 100, -100), new Vector3(0, 0, 0), 200),
         Math.PI / 4,
         CameraMode.FOCUSED
     );

@@ -8,13 +8,13 @@ class Model {
         'num'//'num' - vertex number // normal number 
 
     */
-    static faceSegmentRegex = /^\d+(\/\d+|\/\d*\/\d+)?$/i;
+    static faceSegmentRegex = /^-?\d+((\/-?\d+)|(\/-?\d*\/-?\d+))?$/i;
 
     // types
-    static fsVreg = /^\d+$/i;
-    static fsVTreg = /^\d+\/\d+$/i;
-    static fsVTNreg = /^\d+\/d+\/d+$/i;
-    static fsVNreg = /^\d+\/\/d+$/i;
+    static fsVreg = /^-?\d+$/i;
+    static fsVTreg = /^-?\d+\/-?\d+$/i;
+    static fsVTNreg = /^-?\d+\/-?\d+\/-?\d+$/i;
+    static fsVNreg = /^-?\d+\/\/-?\d+$/i;
 
     constructor(faces, points, normals) {
         this.faces = faces;
@@ -82,11 +82,14 @@ class Model {
     }
 
     static fromOBJ(objText) {
-        const lines = objText.split("\n");
+        const editedObjText = objText.replaceAll("\r", "\n");
+        const lines = editedObjText.split("\n");
         const points = [undefined];       // indexing in obj files starts from 1
         const normals = [undefined];
         const faces = [];
-        for (const line of lines) {
+        for (let line of lines) {
+            line = line.trim();
+            line = line.replaceAll(/\s+/g, " ");
             const segments = line.split(" ");
             if (segments[0] === "v") {
                 points.push(
@@ -113,19 +116,32 @@ class Model {
 
                 if (Model.fsVreg.test(segments[1]) || Model.fsVTreg.test(segments[1])) {
                     // num OR num/num
-                    const points = [];
+                    const fPoints = [];
                     for (let i = 1; i < segments.length; i++) {
-                        points.push(points[parseFloat(segments[i].split("/")[0])]);
+                        const subsegments = segments[i].split("/");
+                        let index = parseFloat(subsegments[0]);
+                        index = index > 0 ? index : points.length + index;  // indices can be negative; if so, use abs(indice)'th element from the end
+                        fPoints.push(points[index]);
                     }
-                    faces.push(new Face(points, Model.__createNormalsFromPoints(points)));
+                    faces.push(new Face(fPoints, Model.__createNormalsFromPoints(points)));
                 } else {
                     // num/num/num OR num//num
                     const fPoints = [];
                     const fNormals = [];
                     for (let i = 1; i < segments.length; i++) {
                         const subsegments = segments[i].split("/")
-                        fPoints.push(points[parseFloat(subsegments[0])]);
-                        fNormals.push(normals[parseFloat(subsegments[2])]);
+                        let pointIndex = parseFloat(subsegments[0]);
+                        let normalIndex = parseFloat(subsegments[2]);
+                        pointIndex = pointIndex > 0 ? pointIndex : points.length + pointIndex;
+                        normalIndex = normalIndex > 0 ? normalIndex : normals.length + normalIndex;
+                        fPoints.push(points[pointIndex]);
+                        fNormals.push(normals[normalIndex]);
+                        if (!points[pointIndex]) {
+                            console.log(line);
+                            console.log(segments);
+                            console.log(subsegments);
+                            return ;
+                        }
                     }
                     const newFace = new Face(fPoints, fNormals);
                     faces.push(newFace);
