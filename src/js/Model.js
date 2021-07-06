@@ -20,6 +20,11 @@ class Model {
         this.faces = faces;
         this.points = points;
         this.normals = normals;
+        
+        const bounds = this.bounds;
+        this.size = bounds.size;
+        this.center = bounds.minBound.add(this.size.timesScalar(0.5));
+        this.biggestDimension = Math.max(this.size.x, this.size.y, this.size.z);
     }
 
     swapYZ() {
@@ -39,6 +44,10 @@ class Model {
         }
         this.__preparePointsArray();
         this.__prepareNormalsArray();
+        [this.bounds.minBound.y, this.bounds.minBound.z] = [this.bounds.minBound.z, this.bounds.minBound.y];
+        [this.bounds.maxBound.y, this.bounds.maxBound.z] = [this.bounds.maxBound.z, this.bounds.maxBound.y];
+        [this.size.y, this.size.z] = [this.size.z, this.size.y];
+        [this.center.y, this.center.z] = [this.center.z, this.center.y];
     }
 
     get pointsArray() {
@@ -150,6 +159,7 @@ class Model {
         }
         points.splice(0, 1);
         normals.splice(0, 1);
+
         return new Model(faces, points, normals);
     }
 

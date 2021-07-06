@@ -17,6 +17,11 @@ function setup() {
 
     const loadModel = prepareModelLoader(renderer, coordinator);
     elementMediator.objModelInput.addEventListener("change", prepareReader(loadModel), false);
+
+    elementMediator.modeSelect.addEventListener("change", (evt) => {
+        camera.mode = evt.target.value == "free" ? CameraMode.FREE : CameraMode.FOCUSED;
+        coordinator.queueRerender();
+    });
 }
 
 function prepareReader(onloadFunction) {
@@ -34,22 +39,23 @@ function prepareReader(onloadFunction) {
 function prepareModelLoader(renderer, coordinator) {
     return (modelText) => {
         const model = Model.fromOBJ(modelText);
-        const bounds = model.bounds;
-        const size = bounds.size;
-        const center = bounds.minBound.add(size.timesScalar(0.5));
-        const biggestDimension = Math.max(size.x, size.y, size.z);
-        const distance = biggestDimension * 1.5;
 
-        renderer.setCenter(center);
-        renderer.setDistance(distance);
+        renderer.setCenter(model.center);
+        renderer.setDistance(model.biggestDimension * 1.5);
         renderer.clearRenderables();
         renderer.addRenderable(model);
-        coordinator.translateMultiplier = Coordinator.translateMultiplier * biggestDimension;
+        coordinator.translateMultiplier = Coordinator.translateMultiplier * model.biggestDimension;
         coordinator.queueRerender();
 
         elementMediator.swapYZButton.onclick = () => {
             model.swapYZ();
             coordinator.queueRerender();
         };
+
+        elementMediator.resetPositionButton.addEventListener("click", () => {
+            renderer.__camera.__orientationInfo.position = model.center;
+            renderer.__camera.__orientationInfo.rotation = new Vector3(0, 0, 0);
+            coordinator.queueRerender();
+        });
     };
 }

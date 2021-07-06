@@ -13,6 +13,7 @@ class Coordinator {
         this.__renderer = renderer;
         this.__inputHandler = inputHandler;
         this.__camera = camera;
+        this.centerPosition = new Vector3(0, 0, 0);
 
         this.__rerenderQueued = true;
 

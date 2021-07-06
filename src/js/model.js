@@ -187,6 +187,10 @@ class Orientation {
     isZero() {
         return this.position.isZero() && this.rotation.isZero() && this.elevation == 0;
     }
+    
+    copy() {
+        return new Orientation(this.position.copy(), this.rotation.copy(), this.elevation);
+    }
 
     toString() {
         return `pos=${this.position}, rot=${this.rotation}, el=${this.elevation}`;

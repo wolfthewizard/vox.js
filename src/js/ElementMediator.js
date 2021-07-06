@@ -4,6 +4,8 @@ class ElementMediator {
         this.__canvas = document.getElementById("canvas");
         this.__objModelInput = document.getElementById("objModelInput");
         this.__swapYZButton = document.getElementById("swapYZButton");
+        this.__modeSelect = document.getElementById("modeSelect");
+        this.__resetPositionButton = document.getElementById("resetPositionButton");
     }
 
     get canvas() {
@@ -16,5 +18,13 @@ class ElementMediator {
 
     get swapYZButton() {
         return this.__swapYZButton;
+    }
+
+    get modeSelect() {
+        return this.__modeSelect;
+    }
+
+    get resetPositionButton() {
+        return this.__resetPositionButton;
     }
 }
