@@ -157,6 +157,10 @@ class Bounds {
             this.maxBound.z - this.minBound.z
         );
     }
+
+    toString() {
+        return `minB=${this.minBound}, maxB=${this.maxBound}`;
+    }
 }
 
 
@@ -250,7 +254,7 @@ class Camera {
                     new Vector3(
                         -elevatedDist * Math.sin(this.__orientationInfo.rotation.y),
                         this.__orientationInfo.elevation * Math.sin(this.__orientationInfo.rotation.x),
-                        -elevatedDist * Math.cos(this.__orientationInfo.rotation.y)
+                        elevatedDist * Math.cos(this.__orientationInfo.rotation.y)
                     )
                 ),
                 new Vector3(

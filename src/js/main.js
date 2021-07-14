@@ -18,10 +18,10 @@ function setup() {
     const loadModel = prepareModelLoader(renderer, coordinator);
     elementMediator.objModelInput.addEventListener("change", prepareReader(loadModel), false);
 
-    elementMediator.modeSelect.addEventListener("change", (evt) => {
+    elementMediator.modeSelect.onchange = (evt) => {
         camera.mode = evt.target.value == "free" ? CameraMode.FREE : CameraMode.FOCUSED;
         coordinator.queueRerender();
-    });
+    };
 }
 
 function prepareReader(onloadFunction) {
@@ -40,7 +40,7 @@ function prepareModelLoader(renderer, coordinator) {
     return (modelText) => {
         const model = Model.fromOBJ(modelText);
 
-        renderer.setCenter(model.center);
+        renderer.setCenter(model.center.copy());
         renderer.setDistance(model.biggestDimension * 1.5);
         renderer.clearRenderables();
         renderer.addRenderable(model);
@@ -52,10 +52,10 @@ function prepareModelLoader(renderer, coordinator) {
             coordinator.queueRerender();
         };
 
-        elementMediator.resetPositionButton.addEventListener("click", () => {
-            renderer.__camera.__orientationInfo.position = model.center;
+        elementMediator.resetPositionButton.onclick = () => {
+            renderer.__camera.__orientationInfo.position = model.center.copy();
             renderer.__camera.__orientationInfo.rotation = new Vector3(0, 0, 0);
             coordinator.queueRerender();
-        });
+        };
     };
 }

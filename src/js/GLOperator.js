@@ -7,6 +7,7 @@ const vertexShaderCode = `
 
     varying float vFogDepth;
     varying vec3 vNormal;
+    // varying vec4 vDebugColor;
 
     void main() {
         gl_Position = uPerspective * uMatrix * aPosition;
@@ -14,6 +15,8 @@ const vertexShaderCode = `
 
         vFogDepth = -(uMatrix * aPosition).z;
         vNormal = aNormal;
+        // vDebugColor = vec4(max(0.2, 0.8 - abs(aPosition.z)), max(0.2, 0.8 - abs(aPosition.x)), max(0.2, 0.8 - abs(aPosition.y)), 1);
+        // vDebugColor = vec4(max(0.2, min(0.8, aPosition.z)), 0.2, 0.2, 1);
     }
 `;
 
@@ -26,6 +29,7 @@ const fragmentShaderCode = `
 
     varying float vFogDepth;
     varying vec3 vNormal;
+    // varying vec4 vDebugColor;
 
     void main() {
         float fogAmount = smoothstep(1000.0, 5000.0, vFogDepth);
@@ -34,6 +38,7 @@ const fragmentShaderCode = `
         float light = dot(normal, uReverseLightDirection);
 
         gl_FragColor = uColor;
+        // gl_FragColor = vDebugColor;
         gl_FragColor.rgb *= max(min(light + uAmbient, 1.5), uAmbient);
         gl_FragColor = mix(gl_FragColor, vec4(0, 0, 0, 1), fogAmount);
     }
@@ -161,7 +166,7 @@ class GLOperator {
 
         const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
 
-        const perspective = matrix4.perspective(camera.fov, aspect, 1, 5000);
+        const perspective = matrix4.perspective(camera.fov, aspect, 0.01, 500);
 
         let matrix = matrix4.identity();
         matrix = matrix4.xRotation(-camera.orientation.rotation.x);
@@ -170,7 +175,7 @@ class GLOperator {
             matrix,
             -camera.orientation.position.x,
             -camera.orientation.position.y,
-            camera.orientation.position.z,
+            -camera.orientation.position.z,
         );
 
         this.gl.uniformMatrix4fv(this.uniforms.uPerspective, false, perspective);

@@ -42,7 +42,7 @@ class InputHandler {
             new Vector3(
                 this.pressedKeys["d"] - this.pressedKeys["a"],
                 this.pressedKeys["e"] - this.pressedKeys["q"],
-                this.pressedKeys["w"] - this.pressedKeys["s"]
+                -(this.pressedKeys["w"] - this.pressedKeys["s"])
             ),
             new Vector3(
                 this.pressedKeys["ArrowUp"] - this.pressedKeys["ArrowDown"],
