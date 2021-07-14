@@ -6,6 +6,7 @@ class ElementMediator {
         this.__swapYZButton = document.getElementById("swapYZButton");
         this.__modeSelect = document.getElementById("modeSelect");
         this.__resetPositionButton = document.getElementById("resetPositionButton");
+        this.__modelColorInput = document.getElementById("modelColorInput");
     }
 
     get canvas() {
@@ -26,5 +27,9 @@ class ElementMediator {
 
     get resetPositionButton() {
         return this.__resetPositionButton;
+    }
+
+    get modelColorInput() {
+        return this.__modelColorInput;
     }
 }

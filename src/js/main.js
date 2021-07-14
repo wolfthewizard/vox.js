@@ -16,12 +16,22 @@ function setup() {
     inputHandler.prepareHandling();
 
     const loadModel = prepareModelLoader(renderer, coordinator);
-    elementMediator.objModelInput.addEventListener("change", prepareReader(loadModel), false);
 
-    elementMediator.modeSelect.onchange = (evt) => {
-        camera.mode = evt.target.value == "free" ? CameraMode.FREE : CameraMode.FOCUSED;
+    const reloadMode = () => {
+        camera.mode = elementMediator.modeSelect.value == "free" ? CameraMode.FREE : CameraMode.FOCUSED;
         coordinator.queueRerender();
     };
+
+    const reloadColor = () => {
+        renderer.setColor(Color.fromHexString(elementMediator.modelColorInput.value));
+        coordinator.queueRerender();
+    };
+
+    elementMediator.objModelInput.onchange =  prepareReader(loadModel);
+    elementMediator.modeSelect.onchange = reloadMode;
+    elementMediator.modelColorInput.onchange = reloadColor;
+    reloadMode();
+    reloadColor();
 }
 
 function prepareReader(onloadFunction) {

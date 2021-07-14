@@ -36,6 +36,19 @@ class Color {
     __resetArray() {
         this.__array = [this.__r, this.__g, this.__b, this.__a];
     }
+
+    static fromHexString(hexStr) {
+        return new Color(
+            parseInt(hexStr.slice(1, 3), 16) / 255,
+            parseInt(hexStr.slice(3, 5), 16) / 255,
+            parseInt(hexStr.slice(5, 7), 16) / 255,
+            1.0
+        );
+    }
+    
+    toString() {
+        return `(${this.__r}, ${this.__g}, ${this.__b}, ${this.__a})`;
+    }
 }
 
 

@@ -34,6 +34,10 @@ class Renderer {
         this.__camera.__orientationInfo.elevation = distance;
     }
 
+    setColor(color) {
+        this.__color = color;
+    }
+
     __render() {
         this.__glOperator.preRender(this.__camera, this.__color);
         for (const renderable of this.__renderables) {
