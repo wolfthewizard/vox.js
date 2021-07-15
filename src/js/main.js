@@ -50,8 +50,8 @@ function prepareModelLoader(renderer, coordinator) {
     return (modelText) => {
         const model = Model.fromOBJ(modelText);
 
-        renderer.setCenter(model.center.copy());
         renderer.setDistance(model.biggestDimension * 1.5);
+        renderer.setCenter(model.center.copy());
         renderer.clearRenderables();
         renderer.addRenderable(model);
         coordinator.translateMultiplier = Coordinator.translateMultiplier * model.biggestDimension;

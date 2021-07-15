@@ -27,7 +27,10 @@ class Renderer {
     }
 
     setCenter(center) {
+        const previousMode = this.__camera.mode;
+        this.__camera.mode = CameraMode.FOCUSED;
         this.__camera.__orientationInfo.position = center;
+        this.__camera.mode = previousMode;
     }
 
     setDistance(distance) {
