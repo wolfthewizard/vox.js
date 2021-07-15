@@ -7,6 +7,10 @@ class ElementMediator {
         this.__modeSelect = document.getElementById("modeSelect");
         this.__resetPositionButton = document.getElementById("resetPositionButton");
         this.__modelColorInput = document.getElementById("modelColorInput");
+        this.__movementSpeedRange = document.getElementById("movementSpeedRange");
+        this.__rotationSpeedRange = document.getElementById("rotationSpeedRange");
+        this.__movementSpeedValue = document.getElementById("movementSpeedValue");
+        this.__rotationSpeedValue = document.getElementById("rotationSpeedValue");
     }
 
     get canvas() {
@@ -31,5 +35,21 @@ class ElementMediator {
 
     get modelColorInput() {
         return this.__modelColorInput;
+    }
+
+    get movementSpeedRange() {
+        return this.__movementSpeedRange;
+    }
+
+    get movementSpeedValue() {
+        return this.__movementSpeedValue;
+    }
+
+    get rotationSpeedRange() {
+        return this.__rotationSpeedRange;
+    }
+
+    get rotationSpeedValue() {
+        return this.__rotationSpeedValue;
     }
 }

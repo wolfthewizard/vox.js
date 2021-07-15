@@ -27,11 +27,23 @@ function setup() {
         coordinator.queueRerender();
     };
 
+    const reloadMovementSpeed = () => {
+        this.coordinator.externalTranslateMultiplier = 4 ** parseInt(elementMediator.movementSpeedRange.value);
+    };
+
+    const reloadRotationSpeed = () => {
+        this.coordinator.externalTranslateMultiplier = 4 ** parseInt(elementMediator.rotationSpeedRange.value);
+    };
+
     elementMediator.objModelInput.onchange =  prepareReader(loadModel);
     elementMediator.modeSelect.onchange = reloadMode;
     elementMediator.modelColorInput.onchange = reloadColor;
+    elementMediator.movementSpeedRange.onchange = reloadMovementSpeed;
+    elementMediator.rotationSpeedRange.onchange = reloadRotationSpeed;
     reloadMode();
     reloadColor();
+    reloadMovementSpeed();
+    reloadRotationSpeed();
 }
 
 function prepareReader(onloadFunction) {

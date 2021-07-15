@@ -19,6 +19,9 @@ class Coordinator {
 
         this.rotateMultiplier = Coordinator.rotateMultiplier;
         this.translateMultiplier = Coordinator.translateMultiplier;
+
+        this.externalRotateMultiplier = 1.0;
+        this.externalTranslateMultiplier = 1.0;
     }
 
     async run() {
@@ -60,12 +63,12 @@ class Coordinator {
                 orientationChange.position.x * Math.sin(cameraOrientation.rotation.y)
             );
             orientationChange.position = orientationChange.position.timesScalar(
-                this.translateMultiplier
+                this.translateMultiplier * this.externalTranslateMultiplier
             );
             orientationChange.rotation = orientationChange.rotation.timesScalar(
-                this.rotateMultiplier
+                this.rotateMultiplier * this.externalRotateMultiplier
             );
-            orientationChange.elevation *= this.translateMultiplier;
+            orientationChange.elevation *= this.translateMultiplier * this.externalTranslateMultiplier;
             this.__camera.move(orientationChange);
             this.__rerenderQueued = true;
         }
