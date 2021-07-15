@@ -291,10 +291,20 @@ class Camera {
     set mode(newMode) {
         if (newMode != this.__mode) {
             this.__mode = newMode;
+
+            const elevatedDist = this.__orientationInfo.elevation * Math.cos(this.__orientationInfo.rotation.x);
+            const positionDeltaVector = new Vector3(
+                elevatedDist * Math.sin(this.__orientationInfo.rotation.y),
+                -this.__orientationInfo.elevation * Math.sin(this.__orientationInfo.rotation.x),
+                elevatedDist * Math.cos(this.__orientationInfo.rotation.y)
+            );
+
             if (newMode == CameraMode.FREE) {
                 // fixed -> free
+                this.__orientationInfo.position = this.__orientationInfo.position.add(positionDeltaVector);
             } else {
                 // free -> fixed
+                this.__orientationInfo.position = this.__orientationInfo.position.add(positionDeltaVector.negative());
             }
         }
     }
