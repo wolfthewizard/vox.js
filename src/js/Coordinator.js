@@ -51,6 +51,14 @@ class Coordinator {
         const axes = this.__inputHandler.axes;
         if (!axes.isZero()) {
             const orientationChange = axes.timesScalar(deltaTime);
+            const cameraOrientation = this.__camera.orientation;
+            orientationChange.position = new Vector3(
+                orientationChange.position.z * Math.sin(cameraOrientation.rotation.y) + 
+                orientationChange.position.x * Math.cos(cameraOrientation.rotation.y),
+                orientationChange.position.y,
+                orientationChange.position.z * Math.cos(cameraOrientation.rotation.y) - 
+                orientationChange.position.x * Math.sin(cameraOrientation.rotation.y)
+            );
             orientationChange.position = orientationChange.position.timesScalar(
                 this.translateMultiplier
             );
