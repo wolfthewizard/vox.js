@@ -63,8 +63,12 @@ function prepareModelLoader(renderer, coordinator) {
         };
 
         elementMediator.resetPositionButton.onclick = () => {
+
+            const previousMode = renderer.__camera.mode;
+            renderer.__camera.mode = CameraMode.FOCUSED;
             renderer.__camera.__orientationInfo.position = model.center.copy();
             renderer.__camera.__orientationInfo.rotation = new Vector3(0, 0, 0);
+            renderer.__camera.mode = previousMode;
             coordinator.queueRerender();
         };
     };
