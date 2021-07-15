@@ -26,13 +26,30 @@ class Coordinator {
 
     async run() {
         const minDelay = 1000 / Coordinator.MAX_FPS;
+        const updateLatency = 1000;
         let previousUpdateTime = Date.now() - minDelay;
+
+        let framesSinceLastUpdate = 0;
+        let lastFrameUpdateId = Math.floor(previousUpdateTime / updateLatency);
+        let lastFrameUpdateTime = previousUpdateTime;
+
         while (true) {
             const startTime = Date.now();
             const deltaTime = startTime - previousUpdateTime;
             previousUpdateTime = startTime;
 
             this.__calculateFrame(deltaTime);
+
+            framesSinceLastUpdate += 1;
+            const thisFrameId = Math.floor(startTime / updateLatency);
+            if (thisFrameId != lastFrameUpdateId) {
+                lastFrameUpdateId = thisFrameId;
+                const fps = framesSinceLastUpdate / ((startTime - lastFrameUpdateTime) / 1000);
+                elementMediator.fpsDisplaySpan.innerHTML = `${fps.toFixed(2)}fps`;
+
+                framesSinceLastUpdate = 0;
+                lastFrameUpdateTime = startTime;
+            }
 
             const endTime = Date.now();
             const calculationDuration = endTime - startTime;

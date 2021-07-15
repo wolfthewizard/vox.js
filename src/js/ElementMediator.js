@@ -11,6 +11,7 @@ class ElementMediator {
         this.__rotationSpeedRange = document.getElementById("rotationSpeedRange");
         this.__movementSpeedValue = document.getElementById("movementSpeedValue");
         this.__rotationSpeedValue = document.getElementById("rotationSpeedValue");
+        this.__fpsDisplaySpan = document.getElementById("fpsDisplaySpan");
     }
 
     get canvas() {
@@ -51,5 +52,9 @@ class ElementMediator {
 
     get rotationSpeedValue() {
         return this.__rotationSpeedValue;
+    }
+
+    get fpsDisplaySpan() {
+        return this.__fpsDisplaySpan;
     }
 }
