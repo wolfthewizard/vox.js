@@ -132,7 +132,9 @@ class Model {
                         index = index > 0 ? index : points.length + index;  // indices can be negative; if so, use abs(indice)'th element from the end
                         fPoints.push(points[index]);
                     }
-                    faces.push(new Face(fPoints, Model.__createNormalsFromPoints(points)));
+                    const fNormals = Model.__createNormalsFromPoints(fPoints);
+                    faces.push(new Face(fPoints, fNormals));
+
                 } else {
                     // num/num/num OR num//num
                     const fPoints = [];
@@ -145,12 +147,6 @@ class Model {
                         normalIndex = normalIndex > 0 ? normalIndex : normals.length + normalIndex;
                         fPoints.push(points[pointIndex]);
                         fNormals.push(normals[normalIndex]);
-                        if (!points[pointIndex]) {
-                            console.log(line);
-                            console.log(segments);
-                            console.log(subsegments);
-                            return ;
-                        }
                     }
                     const newFace = new Face(fPoints, fNormals);
                     faces.push(newFace);
@@ -181,7 +177,12 @@ class Model {
         const normals = [];
         for (let i = 2; i < points.length; i++) {
             const normal = Model.__getNormalVector([points[0], points[i-1], points[i]]);
-            normals.push(normal);
+            if (normals.length == 0) {
+                normals.push(normal, normal, normal);
+            } else {
+                normals.push(normal);
+            }
+            // todo: fix lighting error caused by invalid normals
         }
         return normals;
     }
@@ -190,8 +191,8 @@ class Model {
     static __getNormalVector(triangle) {
         let first = [
             triangle[1].x - triangle[0].x, 
-            triangle[4] - triangle[1].y, 
-            triangle[5] - triangle[2].z
+            triangle[1].y - triangle[1].y, 
+            triangle[1].z - triangle[2].z
         ];
         let second = [
             triangle[2].x - triangle[0].x, 
