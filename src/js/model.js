@@ -60,8 +60,32 @@ class Vector3 {
         this.z = z;
     }
 
+    get length() {
+        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    }
+
     add(other) {
         return new Vector3(this.x + other.x, this.y + other.y, this.z + other.z);
+    }
+
+    addToSelf(other) {
+        this.x += other.x;
+        this.y += other.y;
+        this.z += other.z;
+    }
+
+    normalize() {
+        const l = this.length;
+        if (l > 0) {
+            return this.timesScalar(1 / l);
+        } else {
+            return new Vector3(Infinity, Infinity, Infinity);
+        }
+    }
+
+    normalizeSelf() {
+        const l = this.length;
+        this.timesScalarSelf(1 / l);
     }
 
     timesScalar(scalar) {
@@ -72,12 +96,28 @@ class Vector3 {
         );
     }
 
+    timesScalarSelf(scalar) {
+        this.x *= scalar;
+        this.y *= scalar;
+        this.z *= scalar;
+    }
+
     negative() {
         return new Vector3(-this.x, -this.y, -this.z);
     }
 
+    negativeSelf() {
+        this.x = -this.x;
+        this.y = -this.y;
+        this.z = -this.z;
+    }
+
     isZero() {
         return this.x == 0 && this.y == 0 && this.z == 0;
+    }
+
+    equal(other) {
+        return this.x == other.x && this.y == other.y && this.z == other.z;
     }
 
     copy() {

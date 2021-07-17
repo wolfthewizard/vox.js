@@ -95,27 +95,25 @@ class Model {
         const lines = editedObjText.split("\n");
         const points = [undefined];       // indexing in obj files starts from 1
         const normals = [undefined];
+        const vertexNormals = [undefined];
         const faces = [];
         for (let line of lines) {
             line = line.trim();
             line = line.replaceAll(/\s+/g, " ");
             const segments = line.split(" ");
             if (segments[0] === "v") {
-                points.push(
-                    new Vector3(
-                        parseFloat(segments[1]), 
-                        parseFloat(segments[2]), 
-                        parseFloat(segments[3])
-                    )
-                );
+                const x = parseFloat(segments[1]);
+                const y = parseFloat(segments[2]);
+                const z = parseFloat(segments[3]);
+                let insertedPoint = new Vector3(x, y, z);
+                let insertedNormal = new Vector3(0, 0, 0);
+                points.push(insertedPoint);
+                vertexNormals.push(insertedNormal);
             } else if (segments[0] === "vn") {
-                normals.push(
-                    new Vector3(
-                        parseFloat(segments[1]), 
-                        parseFloat(segments[2]), 
-                        parseFloat(segments[3])
-                    )
-                );
+                const x = parseFloat(segments[1]);
+                const y = parseFloat(segments[2]);
+                const z = parseFloat(segments[3]);
+                normals.push(new Vector3(x, y, z));
             } else if (segments[0] === "f") {
                 // it is assumed (as stated in .obj definition) that all face points match single regex
                 if (!Model.faceSegmentRegex.test(segments[1])) {
@@ -126,15 +124,22 @@ class Model {
                 if (Model.fsVreg.test(segments[1]) || Model.fsVTreg.test(segments[1])) {
                     // num OR num/num
                     const fPoints = [];
+                    const indices = [];
                     for (let i = 1; i < segments.length; i++) {
                         const subsegments = segments[i].split("/");
                         let index = parseFloat(subsegments[0]);
                         index = index > 0 ? index : points.length + index;  // indices can be negative; if so, use abs(indice)'th element from the end
                         fPoints.push(points[index]);
+                        indices.push(index);
                     }
-                    const fNormals = Model.__createNormalsFromPoints(fPoints);
+                    const fFaceNormals = Model.__createFaceNormals(fPoints);
+                    for (let i = 2; i < indices.length; i++) {
+                        vertexNormals[indices[0]].addToSelf(fFaceNormals[i-2]);
+                        vertexNormals[indices[i-1]].addToSelf(fFaceNormals[i-2]);
+                        vertexNormals[indices[i]].addToSelf(fFaceNormals[i-2]);
+                    }
+                    const fNormals = indices.map(i => vertexNormals[i]);
                     faces.push(new Face(fPoints, fNormals));
-
                 } else {
                     // num/num/num OR num//num
                     const fPoints = [];
@@ -155,6 +160,12 @@ class Model {
         }
         points.splice(0, 1);
         normals.splice(0, 1);
+        vertexNormals.splice(0, 1);
+
+        vertexNormals.forEach(vn => vn.normalizeSelf());
+
+        // console.log("debug");
+        // console.log(vertexNormals);
 
         return new Model(faces, points, normals);
     }
@@ -182,11 +193,18 @@ class Model {
             } else {
                 normals.push(normal);
             }
-            // todo: fix lighting error caused by invalid normals
         }
         return normals;
     }
 
+    static __createFaceNormals(points) {
+        const normals = [];
+        for (let i = 2; i < points.length; i++) {
+            const normal = Model.__getNormalVector([points[0], points[i-1], points[i]]);
+            normals.push(normal);
+        }
+        return normals;
+    }
 
     static __getNormalVector(triangle) {
         let first = [
