@@ -274,32 +274,31 @@ class Camera {
     }
 
     move(orientationChange) {
+        const quadfull = Math.PI / 2;
+        const full = 2 * Math.PI;
         if (this.__mode == CameraMode.FREE) {
-            this.__orientationInfo = this.__orientationInfo.add(orientationChange);
-        } else {
-            const quadfull = Math.PI / 2;
-            const full = 2 * Math.PI;
-            this.__orientationInfo.elevation += orientationChange.elevation;
-            this.__orientationInfo.elevation = this.__orientationInfo.elevation < 0 
-                ? 0 
-                : this.__orientationInfo.elevation;
             this.__orientationInfo.position = this.__orientationInfo.position.add(orientationChange.position);
-            this.__orientationInfo.rotation = this.__orientationInfo.rotation.add(orientationChange.rotation.negative());
-            this.__orientationInfo.rotation.x = (
-                this.__orientationInfo.rotation.x < -quadfull 
-                    ? -quadfull 
-                    : this.__orientationInfo.rotation.x > quadfull 
-                        ? quadfull 
-                        : this.__orientationInfo.rotation.x
-            );
-            this.__orientationInfo.rotation.y = (
-                this.__orientationInfo.rotation.y < 0 
-                    ? this.__orientationInfo.rotation.y + full
-                    : this.__orientationInfo.rotation.y > full
-                        ? this.__orientationInfo.rotation.y - full
-                        : this.__orientationInfo.rotation.y
-            );
+            this.__orientationInfo.rotation = this.__orientationInfo.rotation.add(orientationChange.rotation);
+        } else {
+            this.__orientationInfo.position = this.__orientationInfo.position.add(orientationChange.position.negative());
+            this.__orientationInfo.rotation = this.__orientationInfo.rotation.add(orientationChange.rotation);
+            this.__orientationInfo.elevation += orientationChange.elevation;
+            this.__orientationInfo.elevation = Math.max(0, this.__orientationInfo.elevation);
         }
+        this.__orientationInfo.rotation.x = (
+            this.__orientationInfo.rotation.x < -quadfull 
+                ? -quadfull 
+                : this.__orientationInfo.rotation.x > quadfull 
+                    ? quadfull 
+                    : this.__orientationInfo.rotation.x
+        );
+        this.__orientationInfo.rotation.y = (
+            this.__orientationInfo.rotation.y < 0 
+                ? this.__orientationInfo.rotation.y + full
+                : this.__orientationInfo.rotation.y > full
+                    ? this.__orientationInfo.rotation.y - full
+                    : this.__orientationInfo.rotation.y
+        );
     }
 
     get orientation() {

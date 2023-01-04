@@ -64,6 +64,7 @@ function prepareModelLoader(renderer, coordinator) {
 
         renderer.setDistance(model.biggestDimension * 1.5);
         renderer.setCenter(model.center.copy());
+        renderer.resetRotation();
         renderer.clearRenderables();
         renderer.addRenderable(model);
         coordinator.translateMultiplier = Coordinator.translateMultiplier * model.biggestDimension;
@@ -75,11 +76,11 @@ function prepareModelLoader(renderer, coordinator) {
         };
 
         elementMediator.resetPositionButton.onclick = () => {
-
             const previousMode = renderer.__camera.mode;
             renderer.__camera.mode = CameraMode.FOCUSED;
-            renderer.__camera.__orientationInfo.position = model.center.copy();
-            renderer.__camera.__orientationInfo.rotation = new Vector3(0, 0, 0);
+            renderer.setCenter(model.center.copy());
+            renderer.resetRotation();
+            renderer.setDistance(model.biggestDimension * 1.5);
             renderer.__camera.mode = previousMode;
             coordinator.queueRerender();
         };

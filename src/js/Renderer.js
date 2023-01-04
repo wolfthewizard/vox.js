@@ -41,6 +41,10 @@ class Renderer {
         this.__color = color;
     }
 
+    resetRotation() {
+        this.__camera.__orientationInfo.rotation = new Vector3(0, 0, 0);
+    }
+
     __render() {
         this.__glOperator.preRender(this.__camera, this.__color);
         for (const renderable of this.__renderables) {
