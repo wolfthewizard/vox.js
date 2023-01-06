@@ -93,80 +93,97 @@ class Model {
     static fromOBJ(objText) {
         const editedObjText = objText.replaceAll("\r", "\n");
         const lines = editedObjText.split("\n");
-        const points = [undefined];       // indexing in obj files starts from 1
+        const points = [undefined];       // indexing in obj files starts from 1, so one redundant element is added at the beginning
         const normals = [undefined];
         const vertexNormals = [undefined];
         const faces = [];
         let normalsProvided = null;
 
-        for (let line of lines) {
-            line = line.trim();
-            line = line.replaceAll(/\s+/g, " ");
-            const segments = line.split(" ");
-            if (segments[0] === "v") {
-                const x = parseFloat(segments[1]);
-                const y = parseFloat(segments[2]);
-                const z = parseFloat(segments[3]);
-                let insertedPoint = new Vector3(x, y, z);
-                let insertedNormal = new Vector3(0, 0, 0);
+        for (const line of lines) {
+            const trimmedLine = line.trim();
+            const collapsedLine = trimmedLine.replaceAll(/\s+/g, " ");
+            const args = collapsedLine.split(" ");
+            const commandType = args[0];
+            if (commandType === "v") {
+                // adding new vertex (point)
+                const x = parseFloat(args[1]);
+                const y = parseFloat(args[2]);
+                const z = parseFloat(args[3]);
+                const insertedPoint = new Vector3(x, y, z);
+                const vertexNormal = new Vector3(0, 0, 0);
                 points.push(insertedPoint);
-                vertexNormals.push(insertedNormal);
-            } else if (segments[0] === "vn") {
-                const x = parseFloat(segments[1]);
-                const y = parseFloat(segments[2]);
-                const z = parseFloat(segments[3]);
-                normals.push(new Vector3(x, y, z));
-            } else if (segments[0] === "f") {
+                vertexNormals.push(vertexNormal);
+            } else if (commandType === "vn") {
+                // adding new normal
+                const x = parseFloat(args[1]);
+                const y = parseFloat(args[2]);
+                const z = parseFloat(args[3]);
+                const insertedNormal = new Vector3(x, y, z);
+                normals.push(insertedNormal);
+            } else if (commandType === "f") {
+                // defining new face, according to one of regexes above (with/without normals and with/without textures)
+
                 // it is assumed (as stated in .obj definition) that all face points match single regex
-                if (!Model.faceSegmentRegex.test(segments[1])) {
+                if (!Model.faceSegmentRegex.test(args[1])) {
                     console.error(`Line "${line}" is incorrect.`);
                     throw "Corrupted file";
                 }
 
-                if (Model.fsVreg.test(segments[1]) || Model.fsVTreg.test(segments[1])) {
+                if (Model.fsVreg.test(args[1]) || Model.fsVTreg.test(args[1])) {
                     // num OR num/num
+                    // normals not defined and should be calculated
                     normalsProvided = false;
-                    const fPoints = [];
+                    const facePoints = [];
                     const indices = [];
-                    for (let i = 1; i < segments.length; i++) {
-                        const subsegments = segments[i].split("/");
-                        let index = parseFloat(subsegments[0]);
-                        index = index > 0 ? index : points.length + index;  // indices can be negative; if so, use abs(indice)'th element from the end
-                        fPoints.push(points[index]);
+                    for (let i = 1; i < args.length; i++) {
+                        const subargs = args[i].split("/");
+                        const definedIndex = parseFloat(subargs[0]);
+                        const index = definedIndex > 0 ? definedIndex : points.length + definedIndex;  // indices can be negative; if so, use abs(indice)'th element from the end
+                        facePoints.push(points[index]);
                         indices.push(index);
                     }
-                    const fFaceNormals = Model.__createFaceNormals(fPoints);
+                    const calculatedFaceNormals = Model.__createFaceNormals(facePoints);
                     for (let i = 2; i < indices.length; i++) {
-                        vertexNormals[indices[0]].addToSelf(fFaceNormals[i-2]);
-                        vertexNormals[indices[i-1]].addToSelf(fFaceNormals[i-2]);
-                        vertexNormals[indices[i]].addToSelf(fFaceNormals[i-2]);
+                        // indices of first and last two vertices forming a face (3 of n points forming triangle fan)
+                        const firstIndex = indices[0];
+                        const penultimateIndex = indices[i-1];
+                        const lastIndex = indices[i];
+                        const matchingFaceNormal = calculatedFaceNormals[i-2];    // normal for triangle of the face created by those points
+                        vertexNormals[firstIndex].addToSelf(matchingFaceNormal);
+                        vertexNormals[penultimateIndex].addToSelf(matchingFaceNormal);
+                        vertexNormals[lastIndex].addToSelf(matchingFaceNormal);
                     }
-                    const fNormals = indices.map(i => vertexNormals[i]);                                        // phong shading
-                    // const fNormals = fPoints.map((_, i) => i > 2 ? fFaceNormals[i-2] : fFaceNormals[0]);     // flat shading
-                    faces.push(new Face(fPoints, fNormals));
+                    const faceNormals = indices.map(index => vertexNormals[index]);                                                             // phong shading
+                    // const faceNormals = facePoints.map((_, i) => i > 2 ? calculatedFaceNormals[i-2] : calculatedFaceNormals[0]);     // flat shading
+                    const newFace = new Face(facePoints, faceNormals);
+                    faces.push(newFace);
                 } else {
                     // num/num/num OR num//num
+                    // normals defined
                     normalsProvided = true;
-                    const fPoints = [];
-                    const fNormals = [];
-                    for (let i = 1; i < segments.length; i++) {
-                        const subsegments = segments[i].split("/")
-                        let pointIndex = parseFloat(subsegments[0]);
-                        let normalIndex = parseFloat(subsegments[2]);
-                        pointIndex = pointIndex > 0 ? pointIndex : points.length + pointIndex;
-                        normalIndex = normalIndex > 0 ? normalIndex : normals.length + normalIndex;
-                        fPoints.push(points[pointIndex]);
-                        fNormals.push(normals[normalIndex]);
+                    const facePoints = [];
+                    const faceNormals = [];
+                    for (let i = 1; i < args.length; i++) {
+                        const subargs = args[i].split("/")
+                        const definedPointIndex = parseFloat(subargs[0]);
+                        const definedNormalIndex = parseFloat(subargs[2]);
+                        const pointIndex = definedPointIndex > 0 ? definedPointIndex : points.length + definedPointIndex;
+                        const normalIndex = definedNormalIndex > 0 ? definedNormalIndex : normals.length + definedNormalIndex;
+                        facePoints.push(points[pointIndex]);
+                        faceNormals.push(normals[normalIndex]);
                     }
-                    const newFace = new Face(fPoints, fNormals);
+                    const newFace = new Face(facePoints, faceNormals);
                     faces.push(newFace);
                 }
             }
         }
+
+        // removing unnecessary first entry after being done with working with .obj indexing scheme
         points.splice(0, 1);
         normals.splice(0, 1);
         vertexNormals.splice(0, 1);
 
+        // normals should be normalized so thanks to shallow copying we can now normalize all of vectors passed as normals
         vertexNormals.forEach(vn => vn.normalizeSelf());
 
         // console.log("debug");
