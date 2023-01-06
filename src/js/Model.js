@@ -97,6 +97,8 @@ class Model {
         const normals = [undefined];
         const vertexNormals = [undefined];
         const faces = [];
+        let normalsProvided = null;
+
         for (let line of lines) {
             line = line.trim();
             line = line.replaceAll(/\s+/g, " ");
@@ -123,6 +125,7 @@ class Model {
 
                 if (Model.fsVreg.test(segments[1]) || Model.fsVTreg.test(segments[1])) {
                     // num OR num/num
+                    normalsProvided = false;
                     const fPoints = [];
                     const indices = [];
                     for (let i = 1; i < segments.length; i++) {
@@ -138,10 +141,12 @@ class Model {
                         vertexNormals[indices[i-1]].addToSelf(fFaceNormals[i-2]);
                         vertexNormals[indices[i]].addToSelf(fFaceNormals[i-2]);
                     }
-                    const fNormals = indices.map(i => vertexNormals[i]);
+                    const fNormals = indices.map(i => vertexNormals[i]);                                        // phong shading
+                    // const fNormals = fPoints.map((_, i) => i > 2 ? fFaceNormals[i-2] : fFaceNormals[0]);     // flat shading
                     faces.push(new Face(fPoints, fNormals));
                 } else {
                     // num/num/num OR num//num
+                    normalsProvided = true;
                     const fPoints = [];
                     const fNormals = [];
                     for (let i = 1; i < segments.length; i++) {
@@ -165,9 +170,9 @@ class Model {
         vertexNormals.forEach(vn => vn.normalizeSelf());
 
         // console.log("debug");
-        // console.log(vertexNormals);
+        // console.log(normalsProvided ? normals : vertexNormals);
 
-        return new Model(faces, points, normals);
+        return new Model(faces, points, normalsProvided ? normals : vertexNormals);
     }
 
     __preparePointsArray() {
@@ -207,21 +212,8 @@ class Model {
     }
 
     static __getNormalVector(triangle) {
-        let first = [
-            triangle[1].x - triangle[0].x, 
-            triangle[1].y - triangle[1].y, 
-            triangle[1].z - triangle[2].z
-        ];
-        let second = [
-            triangle[2].x - triangle[0].x, 
-            triangle[2].y - triangle[1].y, 
-            triangle[2].z - triangle[2].z
-        ];
-
-        return new Vector3(
-            first[1] * second[2] - first[2] * second[1],
-            first[2] * second[0] - first[0] * second[2],
-            first[0] * second[1] - first[1] * second[0]
-        );
+        const first = triangle[1].sub(triangle[0]);
+        const second = triangle[2].sub(triangle[1]);
+        return first.cross(second).normalize();
     }
 }

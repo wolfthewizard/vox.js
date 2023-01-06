@@ -74,6 +74,24 @@ class Vector3 {
         this.z += other.z;
     }
 
+    sub(other) {
+        return new Vector3(this.x - other.x, this.y - other.y, this.z - other.z);
+    }
+
+    subFromSelf(other) {
+        this.x -= other.x;
+        this.y -= other.y;
+        this.z -= other.z;
+    }
+
+    cross(other) {
+        return new Vector3(
+            this.y * other.z - this.z * other.y,
+            this.z * other.x - this.x * other.z,
+            this.x * other.y - this.y * other.x
+        );
+    }
+
     normalize() {
         const l = this.length;
         if (l > 0) {
