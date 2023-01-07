@@ -72,13 +72,18 @@ class Coordinator {
         if (!axes.isZero()) {
             const orientationChange = axes.timesScalar(deltaTime);
             const cameraOrientation = this.__camera.orientation;
-            orientationChange.position = new Vector3(
-                orientationChange.position.z * Math.sin(cameraOrientation.rotation.y) + 
-                orientationChange.position.x * Math.cos(cameraOrientation.rotation.y),
-                orientationChange.position.y,
-                orientationChange.position.z * Math.cos(cameraOrientation.rotation.y) - 
-                orientationChange.position.x * Math.sin(cameraOrientation.rotation.y)
-            );
+            const deltaX = 
+                orientationChange.position.z * Math.sin(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) + 
+                orientationChange.position.x * Math.cos(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) +
+                orientationChange.position.y * Math.sin(cameraOrientation.rotation.y) * Math.sin(cameraOrientation.rotation.x)
+            const deltaZ = 
+                orientationChange.position.z * Math.cos(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) - 
+                orientationChange.position.x * Math.sin(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) +
+                orientationChange.position.y * Math.cos(cameraOrientation.rotation.y) * Math.sin(cameraOrientation.rotation.x)
+            const deltaY = 
+                orientationChange.position.y * Math.cos(cameraOrientation.rotation.x) -
+                orientationChange.position.z * Math.sin(cameraOrientation.rotation.x)
+            orientationChange.position = new Vector3(deltaX, deltaY, deltaZ);
             orientationChange.position = orientationChange.position.timesScalar(
                 this.translateMultiplier * this.externalTranslateMultiplier
             );
