@@ -32,7 +32,7 @@ function setup() {
     };
 
     const reloadRotationSpeed = () => {
-        this.coordinator.externalTranslateMultiplier = 4 ** parseInt(elementMediator.rotationSpeedRange.value);
+        this.coordinator.externalRotateMultiplier = 1.25 ** parseInt(elementMediator.rotationSpeedRange.value);
     };
 
     elementMediator.objModelInput.onchange =  prepareReader(loadModel);
