@@ -1,0 +1,38 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #202020;
+    padding-top: 0.5%;
+    color: #e0e0e0;
+}
+
+canvas {
+    width: 1200px;
+    height: 750px;
+}
+
+.center-base {
+    display: grid;
+}
+
+.centered-container {
+    display: inline-block;
+    margin: auto;
+}
+
+.relative {
+    position: relative;
+}
+
+.fps-counter {
+    position: absolute; 
+    top: 10px; 
+    left: 10px; 
+    z-index: 1; 
+    color: white; 
+    font-family: monospace;
+}
