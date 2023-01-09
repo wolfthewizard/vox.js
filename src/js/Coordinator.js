@@ -75,11 +75,11 @@ class Coordinator {
             const translationInput = scaledAxes.tAxis1;
             const deltaX = 
                 translationInput.z * Math.sin(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) + 
-                translationInput.x * Math.cos(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) +
+                translationInput.x * Math.cos(cameraOrientation.rotation.y) +
                 translationInput.y * Math.sin(cameraOrientation.rotation.y) * Math.sin(cameraOrientation.rotation.x)
             const deltaZ = 
                 translationInput.z * Math.cos(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) - 
-                translationInput.x * Math.sin(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) +
+                translationInput.x * Math.sin(cameraOrientation.rotation.y) +
                 translationInput.y * Math.cos(cameraOrientation.rotation.y) * Math.sin(cameraOrientation.rotation.x)
             const deltaY = 
                 translationInput.y * Math.cos(cameraOrientation.rotation.x) -
