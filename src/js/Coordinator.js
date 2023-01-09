@@ -70,28 +70,28 @@ class Coordinator {
     __reposition(deltaTime) {
         const axes = this.__inputHandler.axes;
         if (!axes.isZero()) {
-            const orientationChange = axes.timesScalar(deltaTime);
             const cameraOrientation = this.__camera.orientation;
+            const scaledAxes = axes.timesScalar(deltaTime);
+            const translationInput = scaledAxes.tAxis1;
             const deltaX = 
-                orientationChange.position.z * Math.sin(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) + 
-                orientationChange.position.x * Math.cos(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) +
-                orientationChange.position.y * Math.sin(cameraOrientation.rotation.y) * Math.sin(cameraOrientation.rotation.x)
+                translationInput.z * Math.sin(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) + 
+                translationInput.x * Math.cos(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) +
+                translationInput.y * Math.sin(cameraOrientation.rotation.y) * Math.sin(cameraOrientation.rotation.x)
             const deltaZ = 
-                orientationChange.position.z * Math.cos(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) - 
-                orientationChange.position.x * Math.sin(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) +
-                orientationChange.position.y * Math.cos(cameraOrientation.rotation.y) * Math.sin(cameraOrientation.rotation.x)
+                translationInput.z * Math.cos(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) - 
+                translationInput.x * Math.sin(cameraOrientation.rotation.y) * Math.cos(cameraOrientation.rotation.x) +
+                translationInput.y * Math.cos(cameraOrientation.rotation.y) * Math.sin(cameraOrientation.rotation.x)
             const deltaY = 
-                orientationChange.position.y * Math.cos(cameraOrientation.rotation.x) -
-                orientationChange.position.z * Math.sin(cameraOrientation.rotation.x)
-            orientationChange.position = new Vector3(deltaX, deltaY, deltaZ);
-            orientationChange.position = orientationChange.position.timesScalar(
-                this.translateMultiplier * this.externalTranslateMultiplier
-            );
-            orientationChange.rotation = orientationChange.rotation.timesScalar(
-                this.rotateMultiplier * this.externalRotateMultiplier
-            );
-            orientationChange.elevation *= this.translateMultiplier * this.externalTranslateMultiplier;
-            this.__camera.move(orientationChange);
+                translationInput.y * Math.cos(cameraOrientation.rotation.x) -
+                translationInput.z * Math.sin(cameraOrientation.rotation.x)
+            const translation = new Vector3(deltaX, deltaY, deltaZ);
+            const rotation = scaledAxes.dAxis1;
+            const elevation = scaledAxes.sAxis1;
+            const translationScaled = translation.timesScalar(this.translateMultiplier * this.externalTranslateMultiplier);
+            const rotationScaled = rotation.timesScalar(this.rotateMultiplier * this.externalRotateMultiplier);
+            const elevationScaled = elevation * this.translateMultiplier * this.externalTranslateMultiplier;
+            const orientationDelta = new Orientation(translationScaled, rotationScaled, elevationScaled);
+            this.__camera.move(orientationDelta);
             this.__rerenderQueued = true;
         }
     }

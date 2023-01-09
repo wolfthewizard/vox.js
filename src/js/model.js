@@ -277,6 +277,47 @@ class Orientation {
 }
 
 
+class InputAxes {
+
+    constructor(tAxis1, dAxis1, dAxis2=new Vector3(0, 0, 0), sAxis1=0) {
+        this.tAxis1 = tAxis1;
+        this.dAxis1 = dAxis1;
+        this.dAxis2 = dAxis2;
+        this.sAxis1 = sAxis1;
+    }
+
+    add(other) {
+        return new InputAxes(
+            this.tAxis1.add(other.tAxis1),
+            this.dAxis1.add(other.dAxis1),
+            this.dAxis2.add(other.dAxis2),
+            this.sAxis1 + other.sAxis1
+        );
+    }
+
+    timesScalar(scalar) {
+        return new InputAxes(
+            this.tAxis1.timesScalar(scalar),
+            this.dAxis1.timesScalar(scalar),
+            this.dAxis2.timesScalar(scalar),
+            this.sAxis1 * scalar
+        );
+    }
+
+    isZero() {
+        return this.tAxis1.isZero() && this.dAxis1.isZero() && this.dAxis2.isZero() && this.sAxis1 == 0;
+    }
+    
+    copy() {
+        return new InputAxes(this.tAxis1.copy(), this.dAxis1.copy(), this.dAxis2.copy(), this.sAxis1);
+    }
+
+    toString() {
+        return `ta1=${this.tAxis1}, da1=${this.dAxis1}, da2=${this.dAxis2}, sa1=${this.sAxis1}`;
+    }
+}
+
+
 class CameraMode {
     static FREE = 0;
     static FOCUSED = 1;
